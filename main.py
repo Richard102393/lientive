@@ -196,6 +196,7 @@ def pagina_estados_mos():
 
     st.dataframe(df_u)
 
+
 def pagina_liquidacion_nomina():
     st.header("Liquidación de Nómina")
     gc = gspread.service_account(filename="key.json")
