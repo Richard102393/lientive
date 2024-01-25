@@ -11,7 +11,8 @@ def pagina_nomina():
     st.header("Nómina por Artesana")
 
     # Iniciar el Drive
-    gc = gspread.service_account(filename="key.json")
+    key = st.secrets["gcp_service_account"]
+    gc = gspread.service_account(key)
 
     # Abrir y establecer el libro con el que se va a trabajar
     sh_Calidad = gc.open("Calidad")
