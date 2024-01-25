@@ -10,10 +10,12 @@ import toml
 
 def pagina_nomina():
     st.header("Nómina por Artesana")
+    # Obtener las credenciales del servicio desde Streamlit Secrets
+    service_account_credentials = st.secrets["service_account"]
 
-    gc = gspread.service_account(**st.secrets.service_account)
-    # Abrir y establecer el libro con el que se va a trabajar
-
+    # Utilizar las credenciales para autenticar con Google Sheets
+    gc = gspread.service_account(**service_account_credentials)
+    
     sh_Calidad = gc.open("Calidad")
     worksheet_calidad = sh_Calidad.get_worksheet(0)
 
