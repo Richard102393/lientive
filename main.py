@@ -11,16 +11,16 @@ import toml
 def pagina_nomina():
     st.header("Nómina por Artesana")
 
+    # Cargar el contenido TOML desde la variable de entorno
     key_toml = os.getenv("KEY_JSON_CONTENT")
 
     # Convertir la cadena TOML a un diccionario de Python
     key_dict = toml.loads(key_toml)
 
     # Utilizar las credenciales para autenticar con Google Sheets
-    gc = gspread.service_account_from_dict(key_dict)
-
-
+    gc = gspread.service_account(**key_dict['service_account'])
     # Abrir y establecer el libro con el que se va a trabajar
+    
     sh_Calidad = gc.open("Calidad")
     worksheet_calidad = sh_Calidad.get_worksheet(0)
 
