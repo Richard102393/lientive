@@ -7,27 +7,19 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import os
 import toml
+import json
+from streamlit_gsheets import GSheetsConnection
 
 def pagina_nomina():
     st.header("Nómina por Artesana")
-    # Obtener las credenciales del servicio desde Streamlit Secrets
-    service_account_credentials = st.secrets["service_account"]
+    conn = st.connection("gsheets", type=GSheetsConnection)
 
-    # Utilizar las credenciales para autenticar con Google Sheets
-    gc = gspread.service_account(**service_account_credentials)
+    Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
+    Llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
+
+    df_calidad = conn.read(spreadsheet=Calidad)
+    df_llegadas = conn.read(spreadsheet=Llegadas)
     
-    sh_Calidad = gc.open("Calidad")
-    worksheet_calidad = sh_Calidad.get_worksheet(0)
-
-    # Abrir y establecer el libro con el que se va a trabajar
-    sh_Llegadas = gc.open("Llegadas")
-    worksheet_Llegadas = sh_Llegadas.get_worksheet(0)
-
-    # Convertir la hoja de cálculo a un DataFrame de Pandas para Calidad
-    df_calidad = pd.DataFrame(worksheet_calidad.get_all_records())
-
-    # Convertir la hoja de cálculo a un DataFrame de Pandas para Llegadas
-    df_llegadas = pd.DataFrame(worksheet_Llegadas.get_all_records())
 
     # Filtros dinámicos para las columnas
     manual_seleccionado = st.selectbox('Selecciona un Manual', df_calidad['Manual'].unique())
