@@ -119,26 +119,17 @@ def pagina_nomina():
 
 def pagina_estados_mos():
     st.header("Estados de la MOS")
-    gc = gspread.service_account(filename="key.json")
-        # Abrir y establecer el libro con el que se va a trabajar
-    sh_Calidad = gc.open("Calidad")
-    worksheet_calidad = sh_Calidad.get_worksheet(0)
+    conn = st.connection("gsheets", type=GSheetsConnection)
 
-    # Abrir y establecer el libro con el que se va a trabajar
-    sh_Llegadas = gc.open("Llegadas")
-    worksheet_Llegadas = sh_Llegadas.get_worksheet(0)
-
-    sh_Asignaciones = gc.open("Asignaciones")
-    worksheet_Asignaciones = sh_Asignaciones.get_worksheet(0)
-
-    # Convertir la hoja de cálculo a un DataFrame de Pandas para Calidad
-    df_calidad = pd.DataFrame(worksheet_calidad.get_all_records())
-
-    #Convertir la hoja de cálculo a un DataFrame de Pandas para Llegadas
-    df_llegadas = pd.DataFrame(worksheet_Llegadas.get_all_records())
-
-    df_Asignaciones  = pd.DataFrame(worksheet_Asignaciones .get_all_records())
+    Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
+    Llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
+    Asignaciones = "https://docs.google.com/spreadsheets/d/1Aac0QojXVm9FMkVbnwEXVfYiiDn04LXgjFp-Eg54nAw/edit#gid=0"
     
+    df_calidad = conn.read(spreadsheet=Calidad)
+    df_llegadas = conn.read(spreadsheet=Llegadas)
+    df_Asignaciones  = conn.read(spreadsheet=Asignaciones)
+    
+
     df_L = df_llegadas.groupby(['Mos','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_A = df_Asignaciones.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_C = df_calidad.groupby(['Mos','Manual','Talla']).agg({'Aprobadas': 'sum','Devueltas': 'sum'}).reset_index()
@@ -193,14 +184,14 @@ def pagina_estados_mos():
 
 def pagina_liquidacion_nomina():
     st.header("Liquidación de Nómina")
-    gc = gspread.service_account(filename="key.json")
-    sh_Calidad = gc.open("Calidad")
-    worksheet_calidad = sh_Calidad.get_worksheet(0)
-    sh_Llegadas = gc.open("Llegadas")
-    worksheet_Llegadas = sh_Llegadas.get_worksheet(0)
-    df_calidad = pd.DataFrame(worksheet_calidad.get_all_records())
-    df_llegadas = pd.DataFrame(worksheet_Llegadas.get_all_records())
-
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
+    Llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
+    llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
+    
+    df_calidad = conn.read(spreadsheet=Calidad)
+    df_llegadas = conn.read(spreadsheet=Llegadas)
+    df_llegadas = conn.read(spreadsheet=llegadas)
     # Organizar los filtros Mes, Quincena y Año en una sola fila con tres columnas
     col1, col2, col3 = st.columns(3)
 
