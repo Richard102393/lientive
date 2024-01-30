@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache_data(ttl=60)
 def obtener_datos():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
