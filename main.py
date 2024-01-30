@@ -1,19 +1,8 @@
 import streamlit as st
 import pandas as pd
-import gspread
-from google.oauth2 import service_account
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick
-import os
-import toml
-import json
 from streamlit_gsheets import GSheetsConnection
 
-def pagina_nomina():
-    st.header("Nómina por Artesana")
-    # Iniciar el Drive
-
+def obtener_datos():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
     Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
@@ -26,7 +15,13 @@ def pagina_nomina():
     df_Asignaciones  = conn.read(spreadsheet=Asignaciones)
     df_Transferencias = conn.read(spreadsheet=Transferencias)
 
+    return df_calidad, df_llegadas, df_Asignaciones, df_Transferencias
 
+
+def pagina_nomina():
+    st.header("Nómina por Artesana")
+    df_calidad, df_llegadas, df_Asignaciones, df_Transferencias = obtener_datos()
+    
     df_Asignaciones = df_Asignaciones.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_calidad = df_calidad.groupby(['Mos','Manual','Talla','Mes','Año', 'Quincena']).agg({'Aprobadas': 'sum','Devueltas': 'sum'}).reset_index()
     df_Transferencias = df_Transferencias.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
@@ -98,20 +93,8 @@ def pagina_nomina():
 
 def pagina_estados_mos():
     st.header("Estados de la MOS")
-    
-    conn = st.connection("gsheets", type=GSheetsConnection)
+    df_calidad, df_llegadas, df_Asignaciones, df_Transferencias = obtener_datos()
 
-    Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
-    Llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
-    Asignaciones = "https://docs.google.com/spreadsheets/d/1Aac0QojXVm9FMkVbnwEXVfYiiDn04LXgjFp-Eg54nAw/edit#gid=0"
-    Transferencias = "https://docs.google.com/spreadsheets/d/1g0_O-q0jbrWarGo_l8p-Pk58pIsZIFThH5A8jb07gJs/edit#gid=0"
-    
-    df_calidad = conn.read(spreadsheet=Calidad)
-    df_llegadas = conn.read(spreadsheet=Llegadas)
-    df_Asignaciones  = conn.read(spreadsheet=Asignaciones)
-    df_Transferencias = conn.read(spreadsheet=Transferencias)
-
-    
     df_Transferencias = df_Transferencias.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     #df_llegadas = df_llegadas.groupby(['Mos','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_Asignaciones = df_Asignaciones.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
