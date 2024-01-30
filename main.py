@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
+@st.cache(allow_output_mutation=True)
 def obtener_datos():
     conn = st.connection("gsheets", type=GSheetsConnection)
 
