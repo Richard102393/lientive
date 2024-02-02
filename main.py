@@ -97,7 +97,6 @@ def pagina_estados_mos():
     df_calidad, df_llegadas, df_Asignaciones, df_Transferencias = obtener_datos()
 
     df_Transferencias = df_Transferencias.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
-    #df_llegadas = df_llegadas.groupby(['Mos','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_Asignaciones = df_Asignaciones.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_calidad = df_calidad.groupby(['Mos','Manual','Talla']).agg({'Aprobadas': 'sum','Devueltas': 'sum'}).reset_index()
    
@@ -175,7 +174,15 @@ def pagina_estados_mos():
 
 def pagina_liquidacion_nomina():
     st.header("Liquidación de Nómina")
-    conn = st.connection("gsheets", type=GSheetsConnection)
+    df_calidad, df_llegadas, df_Asignaciones, df_Transferencias = obtener_datos()
+
+    df_calidad = df_calidad.dropna(subset=['Mes', 'Quincena', 'Año'])
+
+    # Convertir Mes, Quincena y Año a enteros
+    df_calidad['Mes'] = df_calidad['Mes'].astype(int)
+    df_calidad['Quincena'] = df_calidad['Quincena'].astype(int)
+    df_calidad['Año'] = df_calidad['Año'].astype(int)
+    df_calidad['Mos'] = df_calidad['Mos'].astype(int)
     
     # Organizar los filtros Mes, Quincena y Año en una sola fila con tres columnas
     col1, col2, col3 = st.columns(3)
