@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
+import gspread
+from gspread_dataframe import get_as_dataframe
 
-@st.cache_data(ttl=60)
+@st.cache_data()
 def obtener_datos():
-    conn = st.connection("gsheets", type=GSheetsConnection)
-
+    
+    conn = st.connection("gsheets", type=GSheetsConnection, ttl=60)
     Calidad = "https://docs.google.com/spreadsheets/d/1jwZCPhpChjRWo0nqOGUTX8-hn8teUfZQRxFU50x0wnU/edit#gid=0"
     Llegadas = "https://docs.google.com/spreadsheets/d/1DHZfhULnNZEMNrcDi-5mgdIDQ_ZDM9gAWrQHfdTIR-Y/edit#gid=0"
     Asignaciones = "https://docs.google.com/spreadsheets/d/1Aac0QojXVm9FMkVbnwEXVfYiiDn04LXgjFp-Eg54nAw/edit#gid=0"
@@ -18,11 +20,13 @@ def obtener_datos():
 
     return df_calidad, df_llegadas, df_Asignaciones, df_Transferencias
 
+if st.button("Actualizar"):
+    st.cache_data.clear()
 
 def pagina_nomina():
     st.header("Nómina por Artesana")
     df_calidad, df_llegadas, df_Asignaciones, df_Transferencias = obtener_datos()
-    
+
     df_Asignaciones = df_Asignaciones.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
     df_calidad = df_calidad.groupby(['Mos','Manual','Talla','Mes','Año', 'Quincena']).agg({'Aprobadas': 'sum','Devueltas': 'sum'}).reset_index()
     df_Transferencias = df_Transferencias.groupby(['Mos','Manual','Talla']).agg({'Cantidad': 'sum'}).reset_index()
@@ -81,9 +85,9 @@ def pagina_nomina():
     st.metric(label='El total de la nomina es', value=f'${suma_valor_total:,.0f}')
 
 
-    # Dar formato de dinero a las columnas 'Costo_Unidad' y 'Valor_Total'
-    dt_t['Costo_Unidad'] = '$ ' + dt_t['Costo_Unidad'].apply('{:,.0f}' .format)
-    dt_t['Valor_Total'] = '$ ' + dt_t['Valor_Total'].apply('{:,.0f}' .format)
+    # # Dar formato de dinero a las columnas 'Costo_Unidad' y 'Valor_Total'
+    # dt_t['Costo_Unidad'] = '$ ' + dt_t['Costo_Unidad'].apply('{:,.0f}' .format)
+    # dt_t['Valor_Total'] = '$ ' + dt_t['Valor_Total'].apply('{:,.0f}' .format)
 
     # Seleccionar columnas deseadas incluyendo la nueva 'Valor_Total'
     dt_t = dt_t[['Mos', 'Talla', 'Aprobadas', 'Costo_Unidad', 'Valor_Total']]
